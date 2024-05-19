@@ -5,10 +5,11 @@ using UnityEngine;
 public class ObjectInteraction : MonoBehaviour
 {
     GameObject nearObject;
-    public GameObject[] grenades;
+    public GameObject[] grenades;               // .. 수류탄
+        
+    bool interactionKeyDown;                    // .. 상호작용 키[E]
 
-    bool interactionKeyDown;
-
+    [Header("#Player Status")]
     public int coin;
     public int ammo;
     public int health;
@@ -31,14 +32,14 @@ public class ObjectInteraction : MonoBehaviour
         interactionKeyDown = Input.GetButtonDown("Interaction");
     }
 
-    // .. 상호작용[E키]
+    // .. 상호작용
     void Interaction()
     {
-        // .. 점프/회피중이 아니고, 근처 오브젝트가 있을 때
+        // .. 상호작용 제한
         if(interactionKeyDown && nearObject != null && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump 
             && !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge)
         {
-            // .. 무기 오브젝트
+            // .. 무기 오브젝트 상호작용
             if(nearObject.tag == "Weapon")
             {
                 Item item = nearObject.GetComponent<Item>();                    // .. 무기 정보 가져오기
@@ -50,7 +51,6 @@ public class ObjectInteraction : MonoBehaviour
     }
 
    
-
     void OnTriggerStay(Collider other)
     {
         if(other.tag == "Weapon")
