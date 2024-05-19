@@ -71,7 +71,7 @@ public class PlayerMove : MonoBehaviour
         anim.SetBool("isWalk", walkKeydown);
     }
 
-    // .. Player Rotate
+    // .. 플레이어 방향 회전
     void Turn()
     {
         // .. 입력이 없으면 리턴
@@ -82,6 +82,7 @@ public class PlayerMove : MonoBehaviour
         Quaternion newRotation = Quaternion.LookRotation(moveVec);
         transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, rotateSpeed * Time.deltaTime);
 
+        // 마우스 포인터 방향으로 방향전환 보류
         /*
         // .. 마우스에 의한 회전
         if (GameManager.Instance.player.GetComponent<PlayerAttack>().fireKeydown)
