@@ -6,15 +6,15 @@ public class PlayerWeaponSwap : MonoBehaviour
 {
     public GameObject[] weapons;
     public bool[] hasWeapons;
-
-    bool swapKey1down;      // .. 숫자1키
-    bool swapKey2down;      // .. 숫자2키
-    bool swapKey3down;      // .. 숫자3키
+    
+    bool swapKey1down;      // .. 숫자1 키
+    bool swapKey2down;      // .. 숫자2 키
+    bool swapKey3down;      // .. 숫자3 키
 
     public bool isSwap;
 
-    public Weapon equipedWeapon;       // .. 현재 장착중인 무기
-    int equipedWeaponIndex = -1;    // .. default weapon index
+    public Weapon equipedWeapon;         // .. 현재 장착중인 무기
+    int equipedWeaponIndex = -1;         // .. default weapon index
 
     Animator anim;
 
@@ -35,7 +35,7 @@ public class PlayerWeaponSwap : MonoBehaviour
         swapKey3down = Input.GetButtonDown("Swap3");
     }
 
-    // .. Weapon Swap
+    // .. 무기 스왑
     void Swap()
     {
         // .. 같은무기로 스왑하거나, 무기가없는데 스왑하는경우 방지
@@ -46,12 +46,12 @@ public class PlayerWeaponSwap : MonoBehaviour
         if (swapKey3down && (!hasWeapons[2] || equipedWeaponIndex == 2))
             return;
 
-        int weaponIndex = -1;                   // .. default value
+        int weaponIndex = -1;                   // .. 무기 인덱스 부여 default value = -1
         if (swapKey1down) weaponIndex = 0;
         if (swapKey2down) weaponIndex = 1;
         if (swapKey3down) weaponIndex = 2;
 
-        // .. Swap 키 입력 들어왔을 때(점프/회피중이 아닐 때)
+        // .. Swap 제한
         if((swapKey1down || swapKey2down || swapKey3down) && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump 
             && !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge)
         {
@@ -72,6 +72,7 @@ public class PlayerWeaponSwap : MonoBehaviour
         }
     }
 
+    // .. 스왑상태 탈출
     void SwapOut()
     {
         isSwap = false;
