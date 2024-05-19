@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    public bool fireKeydown;
-    bool reloadKeydown;
-    public bool isReload;
+    public bool fireKeydown;            // .. 공격 키[left ctrl / mouse left
+    bool reloadKeydown;                 // .. 재장전 키[R]
+    public bool isReload;               // .. 장전상태
 
-    public bool isFireReady;
-    float fireDelay;
+    public bool isFireReady;            // .. 공격 가능 여부
+    float fireDelay;                    // .. 공격 딜레이
 
     Animator anim;
 
@@ -34,17 +34,17 @@ public class PlayerAttack : MonoBehaviour
     // .. Player Attack
     void Attack()
     {
-        // .. 장착한 무기가 없으면 리턴
+        // .. 장착한 무기가 없을경우 무시
         if(GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon == null)
         {
             return;
         }
 
-        // .. fireDelay가 무기 공격속도 보다 클 때 isFireReady = true
+        // .. fireDelay가 무기 공격속도 보다 클 때 공격 가능
         fireDelay += Time.deltaTime;
         isFireReady = GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.rate < fireDelay;
 
-        // .. 회피, 스왑중에 공격불가
+        // .. 공격 제한
         if(fireKeydown && isFireReady && !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge
             && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap
             && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump)
@@ -91,6 +91,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    // .. 재장전 탈출 및 총알 개수 계산
     void ReloadOut()
     {
         // .. 남은 탄창개수가 최대탄창보다 많으면 최대탄창으로, 적으면 남은탄창으로
