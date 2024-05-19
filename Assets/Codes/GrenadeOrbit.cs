@@ -12,6 +12,8 @@ public class GrenadeOrbit : MonoBehaviour
     {
         offset = transform.position - target.position;
     }
+
+    // .. 플레이어 주위로 수류탄 회전 
     void Update()
     {
         // .. 회전하는 수류탄들이 타겟(플레이어)을 따라가도록
