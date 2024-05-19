@@ -33,6 +33,7 @@ public class Weapon : MonoBehaviour
         }
     }
     
+    // .. 근접 공격
     IEnumerator Swing()
     {
         yield return new WaitForSeconds(0.1f);
@@ -46,16 +47,17 @@ public class Weapon : MonoBehaviour
         trailEffect.enabled = false;
     }
 
+    // .. 원거리 공격
     IEnumerator Shot()
     {
-        // .. 총알 발사
+        // .. 총알생성 및 발사
         GameObject intantBullet = Instantiate(bullet, bulletPos.position, bulletPos.rotation);
         Rigidbody bulletRigid = intantBullet.GetComponent<Rigidbody>();
         bulletRigid.velocity = bulletPos.forward * 50;
 
         yield return null;
 
-        // .. 탄피 배출
+        // .. 탄피생성 및 배출 연출
         GameObject intantCase = Instantiate(bulletCase, bulletCasePos.position, bulletCasePos.rotation);
         Rigidbody caseRigid = intantCase.GetComponent<Rigidbody>();
         Vector3 caseVec = bulletCasePos.forward * Random.Range(-3, -2) + Vector3.up * Random.Range(2, 3);
