@@ -109,4 +109,6 @@ public class ObjectInteraction : MonoBehaviour
             Destroy(other.gameObject);
         }
     }
+
+    
 }

@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
     [Header("#Player Status")]
     public bool isJump;        // .. Checking Player Jumping
     public bool isDodge;       // .. Checking Player Dodging
+    bool isBorder;             // .. 충돌 체크를 위한 변수
 
     Rigidbody rigid;
     Animator anim;
@@ -38,6 +39,11 @@ public class PlayerMove : MonoBehaviour
         Dodge();
     }
 
+    void FixedUpdate()
+    {
+        FreezeRotation();
+        CantGoWall();
+    }
     // .. Player Key Input
     void GetInput()
     {
@@ -64,8 +70,10 @@ public class PlayerMove : MonoBehaviour
             || GameManager.Instance.player.GetComponent<PlayerAttack>().isReload)
             moveVec = Vector3.zero;
 
+        // .. 벽을 뚫고가지 못 하게
         // .. 걷는중(Shift)이면 이동속도 감소
-        transform.position += moveVec * speed * (walkKeydown ? 0.5f : 1f) * Time.deltaTime;
+        if(!isBorder)
+            transform.position += moveVec * speed * (walkKeydown ? 0.5f : 1f) * Time.deltaTime;
 
         anim.SetBool("isRun", moveVec != Vector3.zero);
         anim.SetBool("isWalk", walkKeydown);
@@ -132,14 +140,27 @@ public class PlayerMove : MonoBehaviour
         isDodge = false;
     }
 
-    
+
+    // .. 연속점프 방지
     void OnCollisionEnter(Collision collision)
     {
-        // .. 연속점프 방지
         if(collision.gameObject.tag == "Floor")
         {
             anim.SetBool("isJump", false);
             isJump = false;
         }
+    }
+
+    // .. 자동 회전 방지
+    void FreezeRotation()
+    {
+        rigid.angularVelocity = Vector3.zero;
+    }
+
+    // .. 벽 뚫림 방지
+    void CantGoWall()
+    {
+        Debug.DrawRay(transform.position, transform.forward * 5, Color.green);
+        isBorder = Physics.Raycast(transform.position, transform.forward, 3, LayerMask.GetMask("Wall"));
     }
 }
