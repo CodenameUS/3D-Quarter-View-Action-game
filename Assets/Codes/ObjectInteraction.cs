@@ -57,11 +57,12 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-    // .. 
+    // .. ¼ö·ùÅº ÅõÃ´
     void Grenade()
     {
         if (hasGrenades == 0)
             return;
+
         if(grenadeThrowKeyDown && !GameManager.Instance.player.GetComponent<PlayerAttack>().isReload
             && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap)
         {
@@ -74,6 +75,8 @@ public class ObjectInteraction : MonoBehaviour
 
                 GameObject instantGrenade = Instantiate(grenadeObj, transform.position, transform.rotation);
                 Rigidbody rigidGrenade = instantGrenade.GetComponent<Rigidbody>();
+
+                // .. ¸¶¿ì½º ¹æÇâÀ¸·Î ¼ö·ùÅº ÅõÃ´
                 rigidGrenade.AddForce(nextVec * 3, ForceMode.Impulse);
                 rigidGrenade.AddTorque(Vector3.back * 10, ForceMode.Impulse);
 
@@ -130,12 +133,13 @@ public class ObjectInteraction : MonoBehaviour
                     }
                     break;
                 case Item.itemType.Grenade:
-                    grenades[hasGrenades].SetActive(true);
-                    hasGrenades += item.value;
-                    if (hasGrenades > maxHasGrenades)
+                    if (hasGrenades >= maxHasGrenades)
                     {
                         hasGrenades = maxHasGrenades;
+                        break;
                     }
+                    grenades[hasGrenades].SetActive(true);
+                    hasGrenades += item.value;
                     break;
             }
             Destroy(other.gameObject);

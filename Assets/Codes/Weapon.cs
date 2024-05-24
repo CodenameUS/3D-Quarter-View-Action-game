@@ -19,6 +19,8 @@ public class Weapon : MonoBehaviour
     public int maxAmmo;                 // .. 최대 총알
     public int curAmmo;                 // .. 현재 총알
 
+    public bool isAttack;               // .. 공격중인지 여부
+
 
     public void Use()
     {
@@ -38,6 +40,7 @@ public class Weapon : MonoBehaviour
     // .. 근접 공격
     IEnumerator Swing()
     {
+        isAttack = true;
         yield return new WaitForSeconds(0.1f);
         meleeArea.enabled = true;               // .. 공격범위 활성화
         trailEffect.enabled = true;             // .. 공격효과 활성화
@@ -47,6 +50,7 @@ public class Weapon : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
         trailEffect.enabled = false;
+        isAttack = false;
     }
 
     // .. 원거리 공격

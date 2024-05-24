@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
+    public Camera followCamera;
+
+    Vector3 mousePos;
+
     public bool fireKeydown;            // .. 공격 키[left ctrl / mouse left
     bool reloadKeydown;                 // .. 재장전 키[R]
-
+    
     public bool isReload;               // .. 장전 여부
     public bool isFireReady;            // .. 공격 가능 여부
+
     float fireDelay;                    // .. 공격 딜레이
 
     Animator anim;
@@ -29,6 +34,7 @@ public class PlayerAttack : MonoBehaviour
     {
         fireKeydown = Input.GetButton("Fire1");
         reloadKeydown = Input.GetButtonDown("Reload");
+        mousePos = Input.mousePosition;
     }
 
     // .. Player Attack
@@ -49,6 +55,19 @@ public class PlayerAttack : MonoBehaviour
             && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap
             && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump)
         {
+            // 마우스 포인터 방향으로 방향전환 
+            if (GameManager.Instance.player.GetComponent<PlayerAttack>().fireKeydown)
+            {
+                Ray ray = followCamera.ScreenPointToRay(mousePos);
+                RaycastHit rayHit;
+                if (Physics.Raycast(ray, out rayHit, 100))
+                {
+                    Vector3 nextVec = rayHit.point - transform.position;
+                    nextVec.y = 0;
+                    transform.LookAt(transform.position + nextVec);
+                }
+            }
+
             // .. Weapon type에 따른 트리거 설정
             GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.Use();
             anim.SetTrigger(GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.type == Weapon.attackType.Melee ? "doSwing" : "doShot");

@@ -12,8 +12,9 @@ public class PlayerWeaponSwap : MonoBehaviour
     bool swapKey3down;      // .. 숫자3 키
 
     public bool isSwap;
-
+    
     public Weapon equipedWeapon;         // .. 현재 장착중인 무기
+
     int equipedWeaponIndex = -1;         // .. default weapon index
 
     Animator anim;
