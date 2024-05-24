@@ -6,8 +6,8 @@ public class PlayerAttack : MonoBehaviour
 {
     public bool fireKeydown;            // .. 공격 키[left ctrl / mouse left
     bool reloadKeydown;                 // .. 재장전 키[R]
-    public bool isReload;               // .. 장전상태
 
+    public bool isReload;               // .. 장전 여부
     public bool isFireReady;            // .. 공격 가능 여부
     float fireDelay;                    // .. 공격 딜레이
 

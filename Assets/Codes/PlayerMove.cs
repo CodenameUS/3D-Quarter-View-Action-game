@@ -10,15 +10,17 @@ public class PlayerMove : MonoBehaviour
     public Camera followCamera;
     Vector3 moveVec;
     Vector3 dodgeVec;
+    Vector3 mousePos;
 
     float hAxis;
     float vAxis;
     bool walkKeydown;          // .. Walk Key(Left Shift)
     bool jumpKeydown;          // .. Jump Key(Space Bar)
-
+    
     [Header("#Player Status")]
     public bool isJump;        // .. Checking Player Jumping
     public bool isDodge;       // .. Checking Player Dodging
+
     bool isBorder;             // .. 충돌 체크를 위한 변수
 
     Rigidbody rigid;
@@ -32,11 +34,12 @@ public class PlayerMove : MonoBehaviour
     
     void Update()
     {
-        GetInput();         
+        GetInput();
         Move();
         Turn();
         Jump();
         Dodge();
+        TurnToFire();
     }
 
     void FixedUpdate()
@@ -51,6 +54,7 @@ public class PlayerMove : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         walkKeydown = Input.GetButton("Walk");             // .. left Shift 키
         jumpKeydown = Input.GetButtonDown("Jump");
+        mousePos = Input.mousePosition;
     }
 
     // .. Player Run & Walk
@@ -58,6 +62,7 @@ public class PlayerMove : MonoBehaviour
     {
         moveVec = new Vector3(hAxis, 0, vAxis).normalized;
 
+        
         // .. 회피중에 방향제어 불가
         if(isDodge)
         {
@@ -86,16 +91,22 @@ public class PlayerMove : MonoBehaviour
         if (moveVec == Vector3.zero)
             return;
 
-        // .. 보는방향으로 자연스럽게 회전
+         // .. 보는방향으로 자연스럽게 회전
         Quaternion newRotation = Quaternion.LookRotation(moveVec);
         transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, rotateSpeed * Time.deltaTime);
+    }
+
+    // .. 공격시 마우스에 의한 회전
+    void TurnToFire()
+    {
+        if (GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap || GameManager.Instance.player.GetComponent<PlayerAttack>().isReload ||
+           isDodge || isJump)
+            return;
 
         // 마우스 포인터 방향으로 방향전환 보류
-        /*
-        // .. 마우스에 의한 회전
         if (GameManager.Instance.player.GetComponent<PlayerAttack>().fireKeydown)
         {
-            Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = followCamera.ScreenPointToRay(mousePos);
             RaycastHit rayHit;
             if (Physics.Raycast(ray, out rayHit, 100))
             {
@@ -104,9 +115,10 @@ public class PlayerMove : MonoBehaviour
                 transform.LookAt(transform.position + nextVec);
             }
         }
-        */
+
     }
 
+   
     // .. Player Jump
     void Jump()
     {
@@ -151,7 +163,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // .. 자동 회전 방지
+    // .. 외부 충돌에 의한 회전 방지
     void FreezeRotation()
     {
         rigid.angularVelocity = Vector3.zero;

@@ -6,10 +6,14 @@ public class ObjectInteraction : MonoBehaviour
 {
     GameObject nearObject;
     public GameObject[] grenades;               // .. 수류탄
-        
-    bool interactionKeyDown;                    // .. 상호작용 키[E]
+    public GameObject grenadeObj;
+    public Camera followCamera;
 
-    [Header("#Player Status")]
+    Vector3 mousePos;
+
+    bool interactionKeyDown;                    // .. 상호작용 키[E]
+    bool grenadeThrowKeyDown;                   // .. 수류탄 투척키[우클릭]
+
     public int coin;
     public int ammo;
     public int health;
@@ -25,11 +29,14 @@ public class ObjectInteraction : MonoBehaviour
     {
         GetInput();
         Interaction();
+        Grenade();
     }
 
     void GetInput()
     {
         interactionKeyDown = Input.GetButtonDown("Interaction");
+        grenadeThrowKeyDown = Input.GetButtonDown("Fire2");
+        mousePos = Input.mousePosition;
     }
 
     // .. 상호작용
@@ -50,7 +57,32 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-   
+    // .. 
+    void Grenade()
+    {
+        if (hasGrenades == 0)
+            return;
+        if(grenadeThrowKeyDown && !GameManager.Instance.player.GetComponent<PlayerAttack>().isReload
+            && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap)
+        {
+            Ray ray = followCamera.ScreenPointToRay(mousePos);
+            RaycastHit rayHit;
+            if (Physics.Raycast(ray, out rayHit, 100))
+            {
+                Vector3 nextVec = rayHit.point - transform.position;
+                nextVec.y = 2;
+
+                GameObject instantGrenade = Instantiate(grenadeObj, transform.position, transform.rotation);
+                Rigidbody rigidGrenade = instantGrenade.GetComponent<Rigidbody>();
+                rigidGrenade.AddForce(nextVec * 3, ForceMode.Impulse);
+                rigidGrenade.AddTorque(Vector3.back * 10, ForceMode.Impulse);
+
+                hasGrenades--;
+                grenades[hasGrenades].SetActive(false);
+            }
+        }
+    }
+
     void OnTriggerStay(Collider other)
     {
         if(other.tag == "Weapon")

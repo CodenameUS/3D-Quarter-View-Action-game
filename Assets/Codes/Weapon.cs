@@ -19,6 +19,7 @@ public class Weapon : MonoBehaviour
     public int maxAmmo;                 // .. 최대 총알
     public int curAmmo;                 // .. 현재 총알
 
+
     public void Use()
     {
         if(type == attackType.Melee)
@@ -31,8 +32,9 @@ public class Weapon : MonoBehaviour
             curAmmo--;
             StartCoroutine("Shot");
         }
+        
     }
-    
+
     // .. 근접 공격
     IEnumerator Swing()
     {
