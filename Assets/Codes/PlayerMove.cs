@@ -22,7 +22,7 @@ public class PlayerMove : MonoBehaviour
     bool isBorder;             // .. 충돌 체크를 위한 변수
 
 
-    Rigidbody rigid;
+    public Rigidbody rigid;
     Animator anim;
 
     private void Awake()

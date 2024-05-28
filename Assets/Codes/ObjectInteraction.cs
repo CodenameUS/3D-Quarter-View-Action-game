@@ -24,7 +24,15 @@ public class ObjectInteraction : MonoBehaviour
     public int maxHealth;
     public int maxHasGrenades;
 
-  
+    bool isDamage;
+
+    MeshRenderer[] meshs;
+
+    void Awake()
+    {
+        meshs = GetComponentsInChildren<MeshRenderer>();
+    }
+
     void Update()
     {
         GetInput();
@@ -144,7 +152,45 @@ public class ObjectInteraction : MonoBehaviour
             }
             Destroy(other.gameObject);
         }
+        else if(other.tag == "EnemyBullet")
+        {
+            if(!isDamage)
+            {
+                Bullet enemyBullet = other.GetComponent<Bullet>();
+                health -= enemyBullet.damage;
+
+                bool isBossAttack = other.name == "Boss Melee Area";
+
+                StartCoroutine(OnDamage(isBossAttack));
+            }
+            // .. 원거리 미사일 파괴
+            if (other.GetComponent<Rigidbody>() != null)
+                Destroy(other.gameObject);
+        }
     }
 
-    
+    IEnumerator OnDamage(bool isBossAttack)
+    {
+        isDamage = true;
+
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.yellow;
+        }
+
+        if (isBossAttack)
+            GameManager.Instance.player.GetComponent<PlayerMove>().rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
+
+        yield return new WaitForSeconds(1f);
+
+        isDamage = false;
+
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.white;
+        }
+
+        if (isBossAttack)
+            GameManager.Instance.player.GetComponent<PlayerMove>().rigid.velocity = Vector3.zero;
+    }
 }
