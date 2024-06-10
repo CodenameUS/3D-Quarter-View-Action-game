@@ -25,10 +25,15 @@ public class PlayerMove : MonoBehaviour
     public Rigidbody rigid;
     Animator anim;
 
+    PlayerAttack playerAttack;
+    PlayerWeaponSwap playerWeaponSwap;
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        playerAttack = GetComponent<PlayerAttack>();
+        playerWeaponSwap = GetComponent<PlayerWeaponSwap>();
     }
 
     void Update()
@@ -67,9 +72,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         // .. 스왑/공격중에 이동불가
-        if (GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap
-            || !GameManager.Instance.player.GetComponent<PlayerAttack>().isFireReady
-            || GameManager.Instance.player.GetComponent<PlayerAttack>().isReload)
+        if (playerWeaponSwap.isSwap || !playerAttack.isFireReady || playerAttack.isReload)
             moveVec = Vector3.zero;
 
         // .. 벽을 뚫고가지 못 하게
@@ -97,7 +100,7 @@ public class PlayerMove : MonoBehaviour
     // .. Player Jump
     void Jump()
     {
-        if(jumpKeydown && moveVec == Vector3.zero && !isJump && !isDodge && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap)
+        if(jumpKeydown && moveVec == Vector3.zero && !isJump && !isDodge && !playerWeaponSwap.isSwap)
         {
             rigid.AddForce(Vector3.up * 15, ForceMode.Impulse);
             anim.SetBool("isJump", true);
@@ -109,7 +112,7 @@ public class PlayerMove : MonoBehaviour
     // .. Player Dodge
     void Dodge()
     {
-        if (jumpKeydown && moveVec != Vector3.zero && !isDodge && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap)
+        if (jumpKeydown && moveVec != Vector3.zero && !isDodge && !playerWeaponSwap.isSwap)
         {
             dodgeVec = moveVec;
             speed *= 3/2f;
@@ -149,5 +152,10 @@ public class PlayerMove : MonoBehaviour
     {
         Debug.DrawRay(transform.position, transform.forward * 5, Color.green);
         isBorder = Physics.Raycast(transform.position, transform.forward, 3, LayerMask.GetMask("Wall"));
+    }
+
+    void Test()
+    {
+        
     }
 }

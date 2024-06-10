@@ -27,10 +27,16 @@ public class ObjectInteraction : MonoBehaviour
     bool isDamage;
 
     MeshRenderer[] meshs;
+    PlayerMove playerMove;
+    PlayerWeaponSwap playerWeaponSwap;
+    PlayerAttack playerAttack;
 
     void Awake()
     {
         meshs = GetComponentsInChildren<MeshRenderer>();
+        playerMove = GetComponent<PlayerMove>();
+        playerWeaponSwap = GetComponent<PlayerWeaponSwap>();
+        playerAttack = GetComponent<PlayerAttack>();
     }
 
     void Update()
@@ -51,15 +57,14 @@ public class ObjectInteraction : MonoBehaviour
     void Interaction()
     {
         // .. 상호작용 제한
-        if(interactionKeyDown && nearObject != null && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump 
-            && !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge)
+        if(interactionKeyDown && nearObject != null && !playerMove.isJump && !playerMove.isDodge)
         {
             // .. 무기 오브젝트 상호작용
             if(nearObject.tag == "Weapon")
             {
                 Item item = nearObject.GetComponent<Item>();                    // .. 무기 정보 가져오기
                 int itemIndex = item.value;
-                GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().hasWeapons[itemIndex] = true; // .. 해당 무기를 소유했음
+                playerWeaponSwap.hasWeapons[itemIndex] = true; // .. 해당 무기를 소유했음
                 Destroy(nearObject);
             }
         }
@@ -71,8 +76,7 @@ public class ObjectInteraction : MonoBehaviour
         if (hasGrenades == 0)
             return;
 
-        if(grenadeThrowKeyDown && !GameManager.Instance.player.GetComponent<PlayerAttack>().isReload
-            && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap)
+        if(grenadeThrowKeyDown && !playerAttack.isReload && !playerWeaponSwap.isSwap)
         {
             Ray ray = followCamera.ScreenPointToRay(mousePos);
             RaycastHit rayHit;
@@ -179,7 +183,7 @@ public class ObjectInteraction : MonoBehaviour
         }
 
         if (isBossAttack)
-            GameManager.Instance.player.GetComponent<PlayerMove>().rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
+            playerMove.rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
 
         yield return new WaitForSeconds(1f);
 
@@ -191,6 +195,6 @@ public class ObjectInteraction : MonoBehaviour
         }
 
         if (isBossAttack)
-            GameManager.Instance.player.GetComponent<PlayerMove>().rigid.velocity = Vector3.zero;
+            playerMove.rigid.velocity = Vector3.zero;
     }
 }

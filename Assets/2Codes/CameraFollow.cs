@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target;
-    public Vector3 offset;
+    [SerializeField] private Transform target;
+    private Vector3 offset;
+
+    void Start()
+    {
+        offset = new Vector3(0, transform.position.y, transform.position.z);    
+    }
 
     // .. 카메라 조정
     void Update()

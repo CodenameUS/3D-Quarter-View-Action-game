@@ -18,10 +18,12 @@ public class PlayerWeaponSwap : MonoBehaviour
     int equipedWeaponIndex = -1;         // .. default weapon index
 
     Animator anim;
+    PlayerMove playerMove;
 
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
+        playerMove = GetComponentInChildren<PlayerMove>();
     }
     void Update()
     {
@@ -53,8 +55,7 @@ public class PlayerWeaponSwap : MonoBehaviour
         if (swapKey3down) weaponIndex = 2;
 
         // .. Swap 제한
-        if((swapKey1down || swapKey2down || swapKey3down) && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump 
-            && !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge)
+        if((swapKey1down || swapKey2down || swapKey3down) && !playerMove.isJump && !playerMove.isDodge)
         {
             // .. 장착중이던 무기를 비활성화 한 뒤 장착
             if (equipedWeapon != null)

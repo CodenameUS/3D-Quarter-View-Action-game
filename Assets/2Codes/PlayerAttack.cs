@@ -18,9 +18,16 @@ public class PlayerAttack : MonoBehaviour
 
     Animator anim;
 
+    PlayerWeaponSwap playerWeaponSwap;
+    PlayerMove playerMove;
+    ObjectInteraction objInt;
+
     void Awake()
     { 
         anim = GetComponentInChildren<Animator>();
+        playerWeaponSwap = GetComponent<PlayerWeaponSwap>();
+        playerMove = GetComponent<PlayerMove>();
+        objInt = GetComponent<ObjectInteraction>();
     }
 
     void Update()
@@ -41,22 +48,22 @@ public class PlayerAttack : MonoBehaviour
     void Attack()
     {
         // .. 장착한 무기가 없을경우 무시
-        if(GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon == null)
+        if(playerWeaponSwap.equipedWeapon == null)
         {
             return;
         }
 
         // .. fireDelay가 무기 공격속도 보다 클 때 공격 가능
         fireDelay += Time.deltaTime;
-        isFireReady = GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.rate < fireDelay;
+        isFireReady = playerWeaponSwap.equipedWeapon.rate < fireDelay;
 
         // .. 공격 제한
-        if(fireKeydown && isFireReady && !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge
-            && !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap
-            && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump)
+        if(fireKeydown && isFireReady && !playerMove.isDodge
+            && !playerWeaponSwap.isSwap
+            && !playerMove.isJump)
         {
             // 마우스 포인터 방향으로 방향전환 
-            if (GameManager.Instance.player.GetComponent<PlayerAttack>().fireKeydown)
+            if (fireKeydown)
             {
                 Ray ray = followCamera.ScreenPointToRay(mousePos);
                 RaycastHit rayHit;
@@ -69,8 +76,8 @@ public class PlayerAttack : MonoBehaviour
             }
 
             // .. Weapon type에 따른 트리거 설정
-            GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.Use();
-            anim.SetTrigger(GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.type == Weapon.attackType.Melee ? "doSwing" : "doShot");
+            playerWeaponSwap.equipedWeapon.Use();
+            anim.SetTrigger(playerWeaponSwap.equipedWeapon.type == Weapon.attackType.Melee ? "doSwing" : "doShot");
             // .. 딜레이를 초기화
             fireDelay = 0;
         }
@@ -80,27 +87,27 @@ public class PlayerAttack : MonoBehaviour
     void Reload()
     {
         // .. 장착한 무기가 없으면 리턴
-        if (GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon == null)
+        if (playerWeaponSwap.equipedWeapon == null)
         {
             return;
         }
 
         // .. 장착한 무기가 근접무기일 때
-        if(GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.type == Weapon.attackType.Melee)
+        if(playerWeaponSwap.equipedWeapon.type == Weapon.attackType.Melee)
         {
             return;
         }
 
         // .. 총알이 없을 때
-        if(GameManager.Instance.player.GetComponent<ObjectInteraction>().ammo == 0)
+        if(objInt.ammo == 0)
         {
             return;
         }
 
         // .. 점프, 회피, 스왑중이 아닐 때
-        if(reloadKeydown && !GameManager.Instance.player.GetComponent<PlayerMove>().isJump &&
-            !GameManager.Instance.player.GetComponent<PlayerMove>().isDodge &&
-            !GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().isSwap &&
+        if(reloadKeydown && !playerMove.isJump &&
+            !playerMove.isDodge &&
+            !playerWeaponSwap.isSwap &&
             isFireReady)
         {
             anim.SetTrigger("doReload");
@@ -114,14 +121,12 @@ public class PlayerAttack : MonoBehaviour
     void ReloadOut()
     {
         // .. 남은 탄창개수가 최대탄창보다 많으면 최대탄창으로, 적으면 남은탄창으로
-        int newAmmo = GameManager.Instance.player.GetComponent<ObjectInteraction>().ammo <
-            GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.maxAmmo ? GameManager.Instance.player.GetComponent<ObjectInteraction>().ammo :
-            GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.maxAmmo;
+        int newAmmo = objInt.ammo < playerWeaponSwap.equipedWeapon.maxAmmo ? objInt.ammo :
+            playerWeaponSwap.equipedWeapon.maxAmmo;
 
-        GameManager.Instance.player.GetComponent<ObjectInteraction>().ammo -= newAmmo;
+        objInt.ammo -= newAmmo;
 
-        GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.curAmmo = 
-            GameManager.Instance.player.GetComponent<PlayerWeaponSwap>().equipedWeapon.maxAmmo;
+        playerWeaponSwap.equipedWeapon.curAmmo = playerWeaponSwap.equipedWeapon.maxAmmo;
         isReload = false;
     }
 }
